@@ -1,0 +1,6 @@
+"0",""
+"0","fit <- lm(len ~ dose, data = Toothdata)"
+"0",""
+"0","b <- fit$coefficients"
+"0",""
+"0","plot(len ~ dose, data = Toothdata)"

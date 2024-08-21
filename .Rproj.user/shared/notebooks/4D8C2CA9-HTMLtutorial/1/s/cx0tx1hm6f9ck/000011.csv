@@ -1,0 +1,2 @@
+"0",""
+"0","abline(lm(len ~ dose, data = Toothdata))"
