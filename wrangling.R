@@ -89,10 +89,106 @@ my_data2 <- rename(my_data, departure_time = dep_time) # change name of column f
 # filter by tailnum that has N1
 N1_tailnums <- filter(my_data, str_detect(tailnum, "N1"))
 
+# Mutate - add new columns to data frame
+# Lets create a smaller data frame
+my_data_small <- select(my_data, year:day, distance, air_time)
+# Lets calculate the speed of the flights
+mutate(my_data_small, speed = distance / air_time * 60) # mph
+my_data_small <- mutate(my_data_small, speed = distance / air_time * 60)
 
+# what if we wanted to create a new data frame with only your calculations (transmute)
+airspeed <- transmute(my_data_small, speed = distance / air_time * 60, speed2 = distance / air_time) # mph and mpm
 
+# summarize and by_group
+# we can use summarize to run a function on a data column to get a single return
+summarise(my_data, delay = mean(dep_delay, na.rm = TRUE))
 
+# So we can see here that the avg delay is about 12 minutes, we gain additional value in summarize by pairing it with by_group()
+by_day <- group_by(my_data, year, month, day)
+summarize(by_day, delay = mean(dep_delay, na.rm = TRUE))
+# As you can see, we now have the delay by the days of the year
 
+# What happens if we don't tell R what to do with the missing data?
+summarise(by_day, delay = mean(dep_delay))
+
+# We can also filter our data based on NA (which in this data set was cancelled flights)
+not_cancelled <- filter(my_data, !is.na(dep_delay), !is.na(arr_delay))
+nrow(not_cancelled)
+# OR???
+not_cancelled2 <- filter(my_data, !is.na(dep_time))
+nrow(not_cancelled2)
+
+# Lets run summarize again on this data
+summarise(not_cancelled, delay = mean(dep_delay))
+
+# counts - we can also count the number of variables that are NA in our dataset
+sum(is.na(my_data$dep_delay))
+
+# We can also count the numbers that are not NA
+sum(!is.na(my_data$dep_delay))
+
+# with tibble datasets (later on this tutorial...), we can pipe results to get rid of the need to use the dollar signs to get col data
+# we can then summarize the number of flights by minutes delayed
+
+my_data %>%
+  group_by(year, month, day) %>%
+  summarise(mean = mean(dep_time, na.rm = TRUE))
+
+# Now its time to explore tibbles, they are modified dataframes which tweak some of the older features from data frames. 
+library(tibble)
+as_tibble(iris)
+
+# As we can see, we have the same data frame, but we have different features
+
+# You can also create a tibble from scratch with tibble()
+
+tibble(
+  x = 1:5,
+  y = 1,
+  z = x ^ 2 + y
+)
+
+# you can also use tribble() for basic data table creation
+tribble(
+  ~genea,
+  ~geneb,
+  ~genec,
+  
+  110,
+  112,
+  114,
+  
+  6,
+  5,
+  4,
+  
+)
+
+# Tibbles are built to not overwhelm your console when printing data
+# Only showing the first few lines
+# This is how a data frame prints
+print(by_day)
+as.data.frame(by_day)
+head(by_day)
+
+nycflights13::flights %>%
+  print(n=10, width = Inf)
+
+# Subsetting tibbles is easy, similar to data frames
+df_tibble <- tibble(nycflights13::flights)
+df_tibble
+
+# We can subset by column name using the $
+df_tibble$carrier
+
+#  we can also subset by position by using the [[]]
+df_tibble[[2]]
+
+df_tibble %>%
+  .$carrier
+
+# Some older functions do not like tibbles. Thus you might have to convert them back to dataframe
+class(df_tibble)
 
 
 
