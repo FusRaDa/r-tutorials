@@ -189,11 +189,58 @@ df_tibble %>%
 
 # Some older functions do not like tibbles. Thus you might have to convert them back to dataframe
 class(df_tibble)
+df_tibble_2 <- as.data.frame(df_tibble)
+class(df_tibble_2)
 
+df_tibble
+head(df_tibble_2)
 
+# tidyr
+library(tidyverse)
 
+# How do we make a tidy dataset? The tidyverse follows three rues
+# 1 - each variable must have its own column
+# 2 - each observation must have its own row
+# 3 - each value has its own cell
 
+# It is impossible to satisfy two of the three rules
 
+# This leads to the following instructions for tidy data:
+# 1 - put each dataset into a tibble
+# 2 - put each variable into a column
+# 3 - profit
 
+# picking on consistant method of data storage for easier understanding of your code and what is happening under the hood
 
+# Let's now look at working with tibbles
+bmi <- tibble(women)
+
+bmi %>%
+  mutate(bmi = (703 * weight)/(height)^2)
+
+# spreading and gathering
+# sometimes you won't find datasets that don't fit will into a tibble
+# we'll use the built in data from tidyverse for this part
+
+table4a
+
+# as you can see from this data, we have one variable in column a (country)
+# columns b and c are two of the same, thus there are two observations in each row - violates tidy rule
+# to fix this we can use the gather function
+table4a %>%
+  gather("1999", "2000", key = "year", value = "cases")
+
+# Lets look at another example - similar example as table4a
+table4b
+table4b %>%
+  gather("1999", "2000", key = "year", value = "population")
+
+# what if we want to join these two tables? Let's use deplyr
+table4a <- table4a %>%
+  gather("1999", "2000", key = "year", value = "cases")
+
+table4b <- table4b %>%
+  gather("1999", "2000", key = "year", value = "population")
+
+left_join(table4a, table4b)
 
