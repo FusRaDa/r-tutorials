@@ -244,3 +244,46 @@ table4b <- table4b %>%
 
 left_join(table4a, table4b)
 
+# Spreading - oppposite of gathering
+table2
+
+# You can see that we have redundant info in columns 1 and 2 - NOT tidy
+# We can fix that by combining rows 1 and 2, 3 and 4, etc...
+spread(table2, key = type, value = count)
+
+# Type is the key of what we are turning into columns, the value is what becomes rows/observations
+
+# In summary spread makes long table shorter and wider
+# Gather makes wide tables narrower and longer
+
+# Separating and pull
+
+# Now what happens when we have two observations stuck in one column?
+
+table3
+
+# As you can see the rate is just the population and cases combines
+# we can use use separate to fix this
+table3 %>%
+  separate(rate, into = c("cases", "population"))
+
+# However if you noticed, column type is not correct
+table3 %>%
+  separate(rate, into = c("cases", "population"), convert = TRUE)
+
+# You can actually specify what you want to seperate based on
+
+table3 %>%
+  sepe
+
+
+
+
+
+
+
+
+
+
+
+
