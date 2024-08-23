@@ -274,8 +274,118 @@ table3 %>%
 # You can actually specify what you want to seperate based on
 
 table3 %>%
-  sepe
+  separate(rate, into = c("cases", "population"), sep = "/", convert = TRUE)
 
+# Lets make this more tidy
+table3 %>%
+  separate(
+    year,
+    into = c("century", "year"),
+    convert = TRUE,
+    sep = 2, # or you can use an int as index of char
+  )
+
+# deplyr - it is rare that you will be working with a single data table
+# this package allows you to join two data tables based on common values
+
+# Mutate joins - add new variables t one data frame from one matching observation in another
+# Filtering joins - filters observation from one data frame based on whether or not they are present in another
+# set operations - treat observations as they are set elements
+
+# lets pull full carrier names based on letter codes
+airlines <- nycflights13::airlines
+
+# lets get info about airports
+airports <- nycflights13::airports
+
+# Lets get info about each plane
+planes <- nycflights13::planes
+
+# Lets get info on the weather at the airport
+weather <- nycflights13::weather
+
+# Lets get info on singular flights
+flights <- nycflights13::flights
+
+# Lets look at how these tables connect
+
+# Flights -> planes based on tailnumber
+# Flights -> airlines through carrier
+# Flights -> airports origin and destination
+# Flights -> weather via origin, year/month/day/hour
+
+# keys - unique identifiers per observation
+# primary key uniquely identifies an observation in its own table
+
+# one way to identify a primary key is as follows:
+planes %>%
+  count(tailnum) %>%
+  filter(n>1)
+# This indicates that the tail number is unique 0x2
+
+planes %>%
+  count(model) %>%
+  filter(n>1)
+# not unique identifier 79x2
+
+# mutate join
+flights2 <- flights %>%
+  select(year:day, hour, origin, dest, tailnum, carrier)
+
+flights2
+
+flights2 %>%
+  select(-origin, -dest) %>%
+  left_join(airlines, by = "carrier")
+# We've added the airline name to our data frame fro mthe airline data frame
+
+# Other types of joins 
+
+# Inner joins (inner_join()) matches a pair of observations whey their key is equal
+# outer joins (outer_join()) keeps observations that appear in at least one table
+
+# unite - reverse of separate?
+table5
+table5 %>%
+  unite(date, century, year, sep = "")
+
+# missing values - NA (explicit) OR just no entry (implicit)
+gene_data <- tibble(
+  gene = c("a", "a", "a", "a", "b", "b", "b"),
+  nuc = c(20, 22, 24, 25, NA, 42, 67),
+  run = c(1, 2, 3, 4, 2, 3, 4)
+)
+
+gene_data
+
+# nucleotide count for Gene b run 2 is explicit missing - NA
+# nucleotide count for gene b run 1 is implicitly missing - not seen at all
+
+# one way we can make implicit missing values explicit is by putting runs in columns
+gene_data %>%
+  spread(gene, nuc) # show all implicit missing values
+
+# If we want to remove the missing values we can use spread and gather and na.rm = TRUE
+gene_data %>%
+  spread(gene, nuc) %>%
+  gather(gene, nuc, "a":"b", na.rm = TRUE)
+
+# Another way we can make missing values implicit to explicit is complete()
+# sometimes an NA is present to represent a value being carried forward
+
+treatment <- tribble(
+  ~person, ~treatment, ~response,
+  "Isaac", 1, 7,
+  NA, 2, 10,
+  NA, 3, 9,
+  "VDB", 1, 8,
+  NA, 2, 11,
+  NA, 3, 10,
+)
+
+# fill NA with prevous value
+treatment %>%
+  fill(person)
 
 
 
