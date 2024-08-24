@@ -383,15 +383,51 @@ treatment <- tribble(
   NA, 3, 10,
 )
 
-# fill NA with prevous value
+# fill NA with previous value
 treatment %>%
   fill(person)
 
+# detect matches - str_detect() returns a logical vector the same length of input
+ y <- c("apple", "banana", "pear")
+y
 
+str_detect(y, "e")
 
+# How many common words start contain the letter "e"
+words
 
+sum(str_detect(words, "e"))
 
+# lets get more complex - wgat proportion words end in a vowel
+mean(str_detect(words, "[aeiou]$")) # 27%
 
+mean(str_detect(words, "^[aeiou]"))
+
+# lets find all the words that don't contain o or u
+no_o <- !str_detect(words, "[ou]")
+no_o
+
+# now lets extract those words that dont contain o or u
+words[!str_detect(words, "[ou]")]
+
+# you can also use str_count() to see how many matches are in a string
+x <- c("ATTAGA", "CGCCCCCGGAT", "TATTA")
+str_count(x, "[GC]")
+
+# Lets couple this with mutate
+df <- tibble(
+  word = words,
+  i = seq_along(word),
+)
+
+df
+
+# show number of vowels in constanents in words data
+df %>%
+  mutate(
+    vowels = str_count(words, "[aeiou]"),
+    constenants = str_count(words, "[^aeiou]")
+  )
 
 
 

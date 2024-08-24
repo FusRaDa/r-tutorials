@@ -1,0 +1,61 @@
+---
+title: "Mouse_DESeq2"
+author: "Matthew Rada"
+date: "2024-08-23"
+output: html_document
+---
+
+Lets load the required libraries for this analysis
+```{r}
+
+library("DESeq2")
+library("dplyr")
+library("apeglm")
+```
+
+Lets load in our data
+```{r}
+countData <- read.csv("GLDS-102_rna_seq_Unnormalized_Counts.csv")
+
+colData <- read.csv("new_pheno_mouse3.csv", sep = ",", row.names = 1)
+```
+
+
+Now we need to add leveling factors to the colData
+```{r}
+colData$group <- factor(colData$group, levels = c("0", "1"))
+```
+
+Now lets make sure we have the same number of individuals as well as groups
+```{R}
+all(rownames(colData)%in% colnames(countData)) # its false
+```
+
+We need to round up the counts, because DESeq2 only allows integers as an input, and not fractional numbers. This depends on the method of alignment that was used upstream.
+```{r, results='hide'}
+countData %>%
+  mutate_if(is.numeric, ceiling)
+
+countData[2:13] <- sapply(countData[,2:13], as.integer)
+
+row.names(countData) <- countData[,1]
+
+countData <- countData[2:13]
+
+rownames(colData) == colnames(countData) # its false since ur using self made csv.. should be true tho lol if real data
+
+```
+
+
+```{r}
+
+dds <- DESeqDataSetFromMatrix(countData = countData, colData = colData, design = ~group)
+
+dds <- dds[rowSums(counts(dds)>2) >= 4]
+
+dds <- DESeq(dds)
+
+res <- results(dds)
+```
+Could not finished tutorial due to missing data...
+
